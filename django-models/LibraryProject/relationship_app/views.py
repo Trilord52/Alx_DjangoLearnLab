@@ -73,12 +73,12 @@ def member_view(request):
 
 
 from django.contrib.auth.decorators import permission_required
-from django.shortcuts import redirect
+from django.shortcuts import render, redirect
+from .models import Book
 
 
 @permission_required("relationship_app.can_add_book")
 def add_book(request):
-    # Simple view just for permission check
     return render(request, "relationship_app/add_book.html")
 
 
@@ -86,10 +86,3 @@ def add_book(request):
 def edit_book(request, pk):
     book = Book.objects.get(pk=pk)
     return render(request, "relationship_app/edit_book.html", {"book": book})
-
-
-@permission_required("relationship_app.can_delete_book")
-def delete_book(request, pk):
-    book = Book.objects.get(pk=pk)
-    book.delete()
-    return redirect("list_books")
