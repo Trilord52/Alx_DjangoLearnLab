@@ -24,3 +24,17 @@ def edit_book(request, book_id):
 def delete_book(request, book_id):
     # Add your delete logic here
     return render(request, "bookshelf/delete_book.html")
+
+
+
+
+
+
+
+
+
+
+
+
+
+from .forms import ExampleForm
