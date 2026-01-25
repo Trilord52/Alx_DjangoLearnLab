@@ -86,3 +86,13 @@ def add_book(request):
 def edit_book(request, pk):
     book = Book.objects.get(pk=pk)
     return render(request, "relationship_app/edit_book.html", {"book": book})
+
+
+
+
+
+@permission_required("relationship_app.can_delete_book")
+def delete_book(request, pk):
+    book = Book.objects.get(pk=pk)
+    book.delete()
+    return redirect("list_books")
