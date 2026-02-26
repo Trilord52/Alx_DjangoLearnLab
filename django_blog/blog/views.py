@@ -6,7 +6,7 @@ def home(request):
 
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from .forms import UserRegisterForm
+from .forms import PostForm, UserRegisterForm
 
 
 def register(request):
@@ -45,7 +45,7 @@ def profile(request):
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
-from .models import Post
+from .models import Post, Tag
 
 # List all posts
 class PostListView(ListView):
@@ -152,3 +152,55 @@ class CommentCreateView(LoginRequiredMixin, CreateView):
 
     def get_success_url(self):
         return reverse('post-detail', kwargs={'pk': self.object.post.pk})
+    
+    
+    
+    
+class PostCreateView(LoginRequiredMixin, CreateView):
+    model = Post
+    form_class = PostForm
+    template_name = 'blog/post_form.html'
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        return super().form_valid(form)
+    
+class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Post
+    form_class = PostForm
+    template_name = 'blog/post_form.html'
+
+    def test_func(self):
+        post = self.get_object()
+        return self.request.user == post.author
+    
+    
+    
+from django.db.models import Q
+
+    
+
+def search_posts(request):
+    query = request.GET.get('q')
+    results = Post.objects.all()
+
+    if query:
+        results = Post.objects.filter(
+            Q(title__icontains=query) |
+            Q(content__icontains=query) |
+            Q(tags__name__icontains=query)
+        ).distinct()
+
+    return render(request, 'blog/search_results.html', {
+        'results': results,
+        'query': query
+    })
+    
+    
+def posts_by_tag(request, tag_name):
+    tag = get_object_or_404(Tag, name=tag_name)
+    posts = tag.posts.all()
+    return render(request, 'blog/posts_by_tag.html', {
+        'tag': tag,
+        'posts': posts
+    })

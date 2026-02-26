@@ -13,6 +13,12 @@ from .views import (
 from .views import CommentCreateView, CommentUpdateView, CommentDeleteView
 
 
+
+
+from .views import search_posts, posts_by_tag
+
+
+
 urlpatterns = [
     path('', views.home, name='home'),
     path('register/', views.register, name='register'),
