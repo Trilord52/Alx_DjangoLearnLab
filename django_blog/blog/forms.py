@@ -20,3 +20,21 @@ class UserUpdateForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['username', 'email']
+
+
+
+
+
+
+from django import forms
+from .models import Comment
+
+class CommentForm(forms.ModelForm):
+    content = forms.CharField(widget=forms.Textarea(attrs={
+        'rows': 4,
+        'placeholder': 'Write your comment here...'
+    }))
+
+    class Meta:
+        model = Comment
+        fields = ['content']
