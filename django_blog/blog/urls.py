@@ -19,6 +19,47 @@ from .views import search_posts, posts_by_tag
 
 
 
+
+
+
+
+
+
+
+
+from django.views.generic import ListView
+from taggit.models import Tag
+from .models import Post
+
+
+class PostByTagListView(ListView):
+    model = Post
+    template_name = "blog/post_list.html"
+    context_object_name = "posts"
+
+    def get_queryset(self):
+        tag = self.kwargs.get("tag_slug")
+        return Post.objects.filter(tags__slug=tag)
+    
+    
+    
+    
+    
+    
+    
+    from django.urls import path
+from .views import (
+    PostListView,
+    PostDetailView,
+    PostCreateView,
+    PostUpdateView,
+    PostDeleteView,
+    PostByTagListView,
+)
+
+    
+    
+
 urlpatterns = [
     path('', views.home, name='home'),
     path('register/', views.register, name='register'),
@@ -36,6 +77,7 @@ urlpatterns = [
     path('comment/<int:pk>/delete/', CommentDeleteView.as_view(), name='comment-delete'),
     path('search/', search_posts, name='post-search'),
     path('tags/<slug:tag_slug>/', posts_by_tag, name='posts-by-tag'),
+    path("tag/<slug:tag_slug>/", PostByTagListView.as_view(), name="posts-by-tag"),
 
 
 
