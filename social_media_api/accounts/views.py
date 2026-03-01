@@ -55,3 +55,37 @@ class UserViewSet(viewsets.ModelViewSet):
         user_to_follow = self.get_object()
         request.user.following.add(user_to_follow)
         return Response({"status": "followed"})
+
+
+
+from django.shortcuts import get_object_or_404
+from rest_framework import generics, permissions
+from rest_framework.response import Response
+from django.contrib.auth import get_user_model
+
+CustomUser = get_user_model()
+
+
+class FollowUserView(generics.GenericAPIView):
+    queryset = CustomUser.objects.all()
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, pk):
+        user_to_follow = get_object_or_404(CustomUser, pk=pk)
+
+        if user_to_follow != request.user:
+            request.user.following.add(user_to_follow)
+            return Response({"message": "User followed successfully."})
+
+        return Response({"error": "You cannot follow yourself."}, status=400)
+
+
+class UnfollowUserView(generics.GenericAPIView):
+    queryset = CustomUser.objects.all()
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, pk):
+        user_to_unfollow = get_object_or_404(CustomUser, pk=pk)
+
+        request.user.following.remove(user_to_unfollow)
+        return Response({"message": "User unfollowed successfully."})

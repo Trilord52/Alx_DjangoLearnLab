@@ -30,11 +30,11 @@ class PostViewSet(viewsets.ModelViewSet):
     search_fields = ['title', 'content']
     
     
-from rest_framework.views import APIView
+from rest_framework.views import APIView, Response
 
 class FeedView(APIView):
     def get(self, request):
         followed_users = request.user.following.all()
         posts = Post.objects.filter(author__in=followed_users)
         serializer = PostSerializer(posts, many=True)
-        return Response(serializer.data)
+        return Response(serializer.data)    
