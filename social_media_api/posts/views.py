@@ -28,3 +28,13 @@ class PostViewSet(viewsets.ModelViewSet):
     ...
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     search_fields = ['title', 'content']
+    
+    
+from rest_framework.views import APIView
+
+class FeedView(APIView):
+    def get(self, request):
+        followed_users = request.user.following.all()
+        posts = Post.objects.filter(author__in=followed_users)
+        serializer = PostSerializer(posts, many=True)
+        return Response(serializer.data)

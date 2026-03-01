@@ -40,3 +40,18 @@ class TokenView(APIView):
         user = get_user_model().objects.get(username=request.data.get("username"))
         token, created = Token.objects.get_or_create(user=user)
         return Response({"token": token.key})
+    
+    
+    
+from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
+
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+    @action(detail=True, methods=['post'])
+    def follow(self, request, pk=None):
+        user_to_follow = self.get_object()
+        request.user.following.add(user_to_follow)
+        return Response({"status": "followed"})
